@@ -12,13 +12,12 @@ namespace APIEnercheck.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly UserManager<Usuario> _userManager;
-        private readonly IAuthorizationService authorizationService;
+        private readonly IAuthorizationService _authorizationService;
         // Colocar DbContext
 
 
         // GET: api/<UsuariosController>
         [HttpGet]
-        []
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
