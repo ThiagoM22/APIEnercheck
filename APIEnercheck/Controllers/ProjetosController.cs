@@ -110,11 +110,18 @@ namespace APIEnercheck.Controllers
         [HttpPost]
         public async Task<ActionResult<Projeto>> PostProjeto([FromBody] ProjetoCreateDto dto)
         {
-            //Recdebe os dados do projeto e valida se o usuario existe
-            var usuario = await _context.Usuarios.FindAsync(dto.UsuarioId);
+            //Busca o usuario
+            var usuario = await _context.Usuarios
+                .Include(u => u.Plano)
+                .FirstOrDefaultAsync(u => u.Id == dto.UsuarioId);
             if (usuario == null)
                 return BadRequest("Usuário não encontrado");
 
+            //Verifica se o usuario possui um plano
+            if (usuario.Plano == null)
+                return BadRequest("Usuário não possui um plano");
+
+            usuario.Plano.QuantidadeReq--;
 
             //Cria o projeto
             var projeto = new Projeto

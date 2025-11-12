@@ -26,7 +26,7 @@ namespace APIEnercheck.Controllers
         }
 
 
-
+        //Essas classes servem para estruturar os dados que serão enviados na resposta da API, evitando ciclos de referência e explondo apenas o necessário
         public class UsuarioDetalhesDto
         {
             public string Id { get; set; }
@@ -57,11 +57,14 @@ namespace APIEnercheck.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
+            //Carrega o plano e os projetos vinculados ao usuario, evitando multiplas consultas ao banco e garante que os dados estejam disponiveis para o mapeamento.
             var usuarios = await _context.Usuarios
-                .Include(u => u.Plano)
-                .Include(u => u.Projetos)
-                .ToListAsync();
+    .Include(u => u.Plano)
+    .Include(u => u.Projetos)
+    .ToListAsync();
 
+
+            //Mapeia o DTO, criando para cada usuario um objeto UsuarioDetalhesDTO, preenchendo os dados básicos do usuario, e caso ele tenha um plano e umprojeto, cria um DTO deles
             var result = usuarios.Select(u => new UsuarioDetalhesDto
             {
                 Id = u.Id,
