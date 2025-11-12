@@ -33,7 +33,7 @@ namespace APIEnercheck.Controllers
             public string Email { get; set; }
             public string NomeCompleto { get; set; }
             public string NumeroCrea { get; set; }
-            public string Empresa { get; set; }
+            public string? Empresa { get; set; }
             public PlanoDto Plano { get; set; }
             public List<ProjetoDto> Projetos { get; set; }
         }
