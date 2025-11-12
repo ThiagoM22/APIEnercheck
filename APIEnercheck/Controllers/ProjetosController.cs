@@ -121,7 +121,12 @@ namespace APIEnercheck.Controllers
             if (usuario.Plano == null)
                 return BadRequest("Usuário não possui um plano");
 
-            usuario.Plano.QuantidadeReq--;
+            if (usuario.UserReq == 0)
+            {
+                return BadRequest("Você não tem requisições sufucientes");
+            }
+
+            usuario.UserReq--;
 
             //Cria o projeto
             var projeto = new Projeto

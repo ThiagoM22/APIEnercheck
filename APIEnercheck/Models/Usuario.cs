@@ -9,6 +9,7 @@ namespace APIEnercheck.Models
         public string? NumeroCrea { get; set; }
         public int? PlanoId { get; set; }
         public Plano? Plano { get; set; }
+        public int UserReq { get; set; }
         public string? Empresa { get; set; }
         public Usuario() : base() { }
     }

@@ -33,6 +33,7 @@ namespace APIEnercheck.Controllers
             public string Email { get; set; }
             public string NomeCompleto { get; set; }
             public string NumeroCrea { get; set; }
+            public int? UseReq { get; set; }
             public string? Empresa { get; set; }
             public PlanoDto Plano { get; set; }
             public List<ProjetoDto> Projetos { get; set; }
@@ -72,6 +73,7 @@ namespace APIEnercheck.Controllers
                 NomeCompleto = u.NomeCompleto,
                 NumeroCrea = u.NumeroCrea,
                 Empresa = u.Empresa,
+                UseReq = u.UserReq,
                 Plano = u.Plano == null ? null : new PlanoDto
                 {
                     PlanoId = u.Plano.PlanoId,
@@ -150,9 +152,10 @@ namespace APIEnercheck.Controllers
             [Required(ErrorMessage = "O nome de usuário é obrigatório")]
             [StringLength(100, ErrorMessage = "O nome de exibição deve ter no máximo 100 caracteres")]
             public string NomeCompleto { get; set; }
+            public int UserReq { get; set; }
 
             public string NumeroCrea { get; set; }
-            public string Empresa { get; set; }
+            public string? Empresa { get; set; }
         }
 
         public class UserResponseDto
@@ -215,7 +218,7 @@ namespace APIEnercheck.Controllers
         [HttpPut("{id}/plano")]
         public async Task<IActionResult> VincularPlanoAoUsuario(string id, [FromBody] int planoId)
         {
-            //Analisa por meio do id do usuario se ele existe ou não
+
             var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
@@ -231,6 +234,7 @@ namespace APIEnercheck.Controllers
             //Atualiza o ususario com o novo plano
             usuario.PlanoId = planoId;
             usuario.Plano = plano;
+            usuario.UserReq = plano.QuantidadeReq ?? 0;
             _context.Entry(usuario).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -242,15 +246,29 @@ namespace APIEnercheck.Controllers
                 usuario.Email,
                 usuario.NomeCompleto,
                 usuario.PlanoId,
-                Plano = new { plano.PlanoId, plano.Nome, plano.Preco }
+                usuario.UserReq,
+                Plano = new { plano.PlanoId, plano.Nome, plano.Preco, plano.QuantidadeUsers }
             });
 
         }
 
         // DELETE api/<UsuariosController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
+            var usuario = await _userManager.FindByIdAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+            var result = await _userManager.DeleteAsync(usuario);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return NoContent();
+
         }
     }
 }
