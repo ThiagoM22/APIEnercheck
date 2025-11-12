@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIEnercheck.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251111195526_inicio")]
-    partial class inicio
+    [Migration("20251112105857_Inicio")]
+    partial class Inicio
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,10 +72,14 @@ namespace APIEnercheck.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("Progresso")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UsuarioId")
                         .IsRequired()
