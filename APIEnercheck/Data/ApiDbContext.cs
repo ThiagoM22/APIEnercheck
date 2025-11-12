@@ -11,6 +11,6 @@ namespace APIEnercheck.Data
         { }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Plano> Planos { get; set; }
-        public DbSet<APIEnercheck.Models.Projeto> Projeto { get; set; } = default!;
+        public DbSet<Projeto> Projeto { get; set; } = default!;
     }
 }

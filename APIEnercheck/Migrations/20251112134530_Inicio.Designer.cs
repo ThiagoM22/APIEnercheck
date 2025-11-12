@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIEnercheck.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251112105857_Inicio")]
+    [Migration("20251112134530_Inicio")]
     partial class Inicio
     {
         /// <inheritdoc />
@@ -146,7 +146,7 @@ namespace APIEnercheck.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PlanoId")
+                    b.Property<int?>("PlanoId")
                         .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
@@ -322,9 +322,7 @@ namespace APIEnercheck.Migrations
                 {
                     b.HasOne("APIEnercheck.Models.Plano", "Plano")
                         .WithMany()
-                        .HasForeignKey("PlanoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PlanoId");
 
                     b.Navigation("Plano");
                 });

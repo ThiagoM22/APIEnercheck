@@ -143,7 +143,7 @@ namespace APIEnercheck.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PlanoId")
+                    b.Property<int?>("PlanoId")
                         .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
@@ -319,9 +319,7 @@ namespace APIEnercheck.Migrations
                 {
                     b.HasOne("APIEnercheck.Models.Plano", "Plano")
                         .WithMany()
-                        .HasForeignKey("PlanoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PlanoId");
 
                     b.Navigation("Plano");
                 });
