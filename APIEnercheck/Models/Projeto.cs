@@ -17,7 +17,7 @@ namespace APIEnercheck.Models
         [DataType(DataType.DateTime)]
         public DateTime dataInicio { get; set; }
         public int? Progresso { get; set; }
-        [AllowedValues("Aprovado", "Pendente", ErrorMessage = " O projeto só possui esses dois status ")]
+        [AllowedValues("Aprovado", "Pendente", "Analisado", ErrorMessage = " O projeto só possui esses dois status ")]
         public string? Status { get; set; }
 
         public string? Analise { get; set; }

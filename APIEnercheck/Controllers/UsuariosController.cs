@@ -66,10 +66,6 @@ namespace APIEnercheck.Controllers
     .Include(u => u.Projetos)
     .ToListAsync();
 
-
-
-
-
             //Mapeia o DTO, criando para cada usuario um objeto UsuarioDetalhesDTO, preenchendo os dados básicos do usuario, e caso ele tenha um plano e umprojeto, cria um DTO deles
             var result = usuarios.Select(u => new UsuarioDetalhesDto
             {
@@ -99,6 +95,94 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
+        [HttpPost("roles")]
+        public async Task<IActionResult> CriarRole([FromBody] string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+                return BadRequest("O nome da rola é obrogatório");
+
+            var rolasExiste = await _context.Roles.AnyAsync(r => r.Name == roleName);
+            if (rolasExiste)
+            {
+                return BadRequest("Essa rola já existe");
+            }
+            var rolasManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
+            if (rolasManager == null)
+                return StatusCode(500, "RolaMagager não dispoivel");
+            var result = await rolasManager.CreateAsync(new IdentityRole(roleName));
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok($"Role '{roleName}' criada com sucesso.");
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUsuarioLogado()
+        {
+            // Tenta obter o ID do usuário logado dos claims
+            var usuarioId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado.");
+
+            // Busca o usuário no banco, incluindo plano e projetos
+            var usuario = await _context.Usuarios
+                .Include(u => u.Plano)
+                .Include(u => u.Projetos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
+
+            if (usuario == null)
+                return NotFound("Usuário não encontrado.");
+
+            // Monta o DTO de resposta
+            var usuarioDto = new UsuarioDetalhesDto
+            {
+                Id = usuario.Id,
+                Email = usuario.Email,
+                NomeCompleto = usuario.NomeCompleto,
+                NumeroCrea = usuario.NumeroCrea,
+                Empresa = usuario.Empresa,
+                UseReq = usuario.UserReq,
+                Plano = usuario.Plano == null ? null : new PlanoDto
+                {
+                    PlanoId = usuario.Plano.PlanoId,
+                    Nome = usuario.Plano.Nome,
+                    Preco = usuario.Plano.Preco
+                },
+                Projetos = usuario.Projetos?.Select(p => new ProjetoDto
+                {
+                    ProjetoId = p.ProjetoId,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    dataInicio = p.dataInicio,
+                    Status = p.Status
+                }).ToList() ?? new List<ProjetoDto>()
+            };
+
+            return Ok(usuarioDto);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIdUsers(string id)
+        {
+            var user = await _context.Usuarios.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+
+            return Ok(user);
+        }
+
+        // GET api/<UsuariosController>/5
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST api/<UsuariosController>
         [HttpPost]
@@ -123,6 +207,10 @@ namespace APIEnercheck.Controllers
             // Crie o usuário com a senha usando o UserManager
             var result = await _userManager.CreateAsync(user, model.Senha);
 
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Cliente"); // ou "Admin", conforme sua lógica
+            }
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
@@ -260,11 +348,6 @@ namespace APIEnercheck.Controllers
 
         }
 
-        // PUT api/<UsuariosController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
 
         // DELETE api/<UsuariosController>/5
         [HttpDelete("{id}")]
