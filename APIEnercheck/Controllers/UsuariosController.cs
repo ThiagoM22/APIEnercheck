@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,12 +27,6 @@ namespace APIEnercheck.Controllers
             this._authorizationService = authorizationService;
         }
 
-        public UsuariosController(UserManager<Usuario> userManager, IAuthorizationService authorizationService, ApiDbContext context)
-        {
-            _userManager = userManager;
-            this.authorizationService = authorizationService;
-            _context = context;
-        }
 
         //Essas classes servem para estruturar os dados que serão enviados na resposta da API, evitando ciclos de referência e explondo apenas o necessário
         public class UsuarioDetalhesDto
@@ -71,6 +67,9 @@ namespace APIEnercheck.Controllers
     .ToListAsync();
 
 
+
+
+
             //Mapeia o DTO, criando para cada usuario um objeto UsuarioDetalhesDTO, preenchendo os dados básicos do usuario, e caso ele tenha um plano e umprojeto, cria um DTO deles
             var result = usuarios.Select(u => new UsuarioDetalhesDto
             {
@@ -100,12 +99,6 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
-        // GET api/<UsuariosController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
 
         // POST api/<UsuariosController>
         [HttpPost]
@@ -221,14 +214,23 @@ namespace APIEnercheck.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id}/plano")]
-        public async Task<IActionResult> VincularPlanoAoUsuario(string id, [FromBody] int planoId)
+        [HttpPut("usuario/add/plano")]
+        public async Task<IActionResult> VincularPlanoAoUsuario([FromBody] int planoId)
         {
 
-            var usuario = await _context.Usuarios.FindAsync(id);
+            // Pega o ID do usuário atual
+            var userLogadoId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userLogadoId == null)
+            {
+                NotFound("Não sobrou NADA pro betinha");
+            }
+
+
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == userLogadoId);
             if (usuario == null)
             {
-                return NotFound("Usuário não encontrado");
+                return NotFound("Usuário não logado ou não encontrado.");
             }
             //Analisa pelo id do plano se ele existe ou não
             var plano = await _context.Planos.FindAsync(planoId);
