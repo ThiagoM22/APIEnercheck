@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APIEnercheck.Data;
 using APIEnercheck.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIEnercheck.Controllers
 {
@@ -44,6 +45,7 @@ namespace APIEnercheck.Controllers
 
         // PUT: api/Planos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlano(int id, Plano plano)
         {
@@ -75,6 +77,7 @@ namespace APIEnercheck.Controllers
 
         // POST: api/Planos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Plano>> PostPlano(Plano plano)
         {
@@ -85,6 +88,7 @@ namespace APIEnercheck.Controllers
         }
 
         // DELETE: api/Planos/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlano(int id)
         {

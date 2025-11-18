@@ -106,6 +106,7 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("roles")]
         public async Task<IActionResult> CriarRole([FromBody] string roleName)
         {
@@ -311,6 +312,7 @@ namespace APIEnercheck.Controllers
         }
 
         // PUT api/<UsuariosController>/5
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuarios(string id, Usuario usuarios, [FromServices] IAuthorizationService authorizationService)
         {
@@ -404,8 +406,8 @@ namespace APIEnercheck.Controllers
 
         }
 
-
         // DELETE api/<UsuariosController>/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
