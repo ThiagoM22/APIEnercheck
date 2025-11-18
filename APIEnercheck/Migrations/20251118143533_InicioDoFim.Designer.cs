@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIEnercheck.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251118113648_InicioDoInicio")]
-    partial class InicioDoInicio
+    [Migration("20251118143533_InicioDoFim")]
+    partial class InicioDoFim
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

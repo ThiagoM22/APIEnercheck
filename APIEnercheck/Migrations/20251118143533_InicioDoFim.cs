@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIEnercheck.Migrations
 {
     /// <inheritdoc />
-    public partial class InicioDoInicio : Migration
+    public partial class InicioDoFim : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
