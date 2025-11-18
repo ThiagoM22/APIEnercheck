@@ -252,6 +252,20 @@ namespace APIEnercheck.Controllers
 
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIdUsers(string id)
+        {
+            var user = await _context.Usuarios.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Usuário não encontrado" });
+            }
+
+            return Ok(user);
+        }
+
+
         // DELETE api/<UsuariosController>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
