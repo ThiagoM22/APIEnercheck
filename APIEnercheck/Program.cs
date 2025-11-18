@@ -1,10 +1,12 @@
 using APIEnercheck.Data;
 using APIEnercheck.Models;
+using APIEnercheck.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient<GeminiService>();
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

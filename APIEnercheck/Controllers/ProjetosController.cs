@@ -9,6 +9,7 @@ using APIEnercheck.Data;
 using APIEnercheck.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using APIEnercheck.Services;
 
 namespace APIEnercheck.Controllers
 {
@@ -17,10 +18,12 @@ namespace APIEnercheck.Controllers
     public class ProjetosController : ControllerBase
     {
         private readonly ApiDbContext _context;
+        private readonly GeminiService _geminiService;
 
-        public ProjetosController(ApiDbContext context)
+        public ProjetosController(ApiDbContext context, GeminiService geminiService)
         {
             _context = context;
+            _geminiService = geminiService;
         }
 
         // GET: api/Projetos
@@ -164,6 +167,55 @@ namespace APIEnercheck.Controllers
             };
 
             return CreatedAtAction("GetProjeto", new { id = projeto.ProjetoId }, response);
+        }
+
+
+        [HttpPost("projeto/{id}/analisar")]
+        public async Task<IActionResult> AnalisarProjeto(Guid id, IFormFile arquivo)
+        {
+            if (arquivo == null || arquivo.Length == 0)
+            {
+
+            }
+
+            var projeto = await _context.Projeto.FindAsync(id);
+
+            if (projeto == null)
+            {
+
+            }
+
+            // Lembrar de a requisição ser reduzida na análise depois, pra testar.
+            // usuario.userReq --;
+
+            try
+            {
+                using var memoryStream = new MemoryStream();
+                await arquivo.CopyToAsync(memoryStream);
+                byte[] imageBytes = memoryStream.ToArray();
+
+
+                string analiseJson = await _geminiService.AnalisarImagemAsync(
+                    imageBytes,
+                    arquivo.ContentType,
+                    projeto.Descricao
+                    );
+
+                projeto.Analise = analiseJson;
+                projeto.Status = "Analisado";
+
+                _context.Entry(projeto).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(projeto);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao analisar o projeto: " + ex.Message);
+            }
+
+
         }
 
         // DELETE: api/Projetos/5
