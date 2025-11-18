@@ -5,7 +5,7 @@
 namespace APIEnercheck.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicio2 : Migration
+    public partial class inicio : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
