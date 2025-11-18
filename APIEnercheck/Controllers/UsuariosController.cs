@@ -66,10 +66,6 @@ namespace APIEnercheck.Controllers
     .Include(u => u.Projetos)
     .ToListAsync();
 
-
-
-
-
             //Mapeia o DTO, criando para cada usuario um objeto UsuarioDetalhesDTO, preenchendo os dados básicos do usuario, e caso ele tenha um plano e umprojeto, cria um DTO deles
             var result = usuarios.Select(u => new UsuarioDetalhesDto
             {
