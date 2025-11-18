@@ -95,6 +95,27 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
+        [HttpPost("roles")]
+        public async Task<IActionResult> CriarRole([FromBody] string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+                return BadRequest("O nome da rola é obrogatório");
+
+            var rolasExiste = await _context.Roles.AnyAsync(r => r.Name == roleName);
+            if (rolasExiste)
+            {
+                return BadRequest("Essa rola já existe");
+            }
+            var rolasManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
+            if (rolasManager == null)
+                return StatusCode(500, "RolaMagager não dispoivel");
+            var result = await rolasManager.CreateAsync(new IdentityRole(roleName));
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            return Ok($"Role '{roleName}' criada com sucesso.");
+        }
+
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetUsuarioLogado()
@@ -186,6 +207,10 @@ namespace APIEnercheck.Controllers
             // Crie o usuário com a senha usando o UserManager
             var result = await _userManager.CreateAsync(user, model.Senha);
 
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Cliente"); // ou "Admin", conforme sua lógica
+            }
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
