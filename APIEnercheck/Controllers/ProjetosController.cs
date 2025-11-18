@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using APIEnercheck.Data;
 using APIEnercheck.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIEnercheck.Controllers
 {
@@ -79,8 +80,7 @@ namespace APIEnercheck.Controllers
         //Define os dados necessários para criar um projeto.
         public class ProjetoCreateDto
         {
-            [Required]
-            public string UsuarioId { get; set; }
+            public string? UsuarioId { get; set; }
             [Required]
             public string Nome { get; set; }
             [Required]
@@ -107,13 +107,19 @@ namespace APIEnercheck.Controllers
         }
         // POST: api/Projetos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Projeto>> PostProjeto([FromBody] ProjetoCreateDto dto)
+        public async Task<ActionResult<ProjetoResponseDto>> PostProjeto([FromBody] ProjetoCreateDto dto)
         {
+            var logadinho = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(logadinho))
+                return Unauthorized("Usuario não autenticado");
+
             //Busca o usuario
             var usuario = await _context.Usuarios
                 .Include(u => u.Plano)
-                .FirstOrDefaultAsync(u => u.Id == dto.UsuarioId);
+                .FirstOrDefaultAsync(u => u.Id == logadinho);
             if (usuario == null)
                 return BadRequest("Usuário não encontrado");
 
@@ -131,7 +137,7 @@ namespace APIEnercheck.Controllers
             //Cria o projeto
             var projeto = new Projeto
             {
-                UsuarioId = dto.UsuarioId,
+                UsuarioId = logadinho,
                 Nome = dto.Nome,
                 Descricao = dto.Descricao,
                 dataInicio = dto.dataInicio,

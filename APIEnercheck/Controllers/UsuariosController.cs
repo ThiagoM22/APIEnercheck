@@ -94,6 +94,67 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUsuarioLogado()
+        {
+            // Tenta obter o ID do usuário logado dos claims
+            var usuarioId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(usuarioId))
+                return Unauthorized("Usuário não autenticado.");
+
+            // Busca o usuário no banco, incluindo plano e projetos
+            var usuario = await _context.Usuarios
+                .Include(u => u.Plano)
+                .Include(u => u.Projetos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
+
+            if (usuario == null)
+                return NotFound("Usuário não encontrado.");
+
+            // Monta o DTO de resposta
+            var usuarioDto = new UsuarioDetalhesDto
+            {
+                Id = usuario.Id,
+                Email = usuario.Email,
+                NomeCompleto = usuario.NomeCompleto,
+                NumeroCrea = usuario.NumeroCrea,
+                Empresa = usuario.Empresa,
+                UseReq = usuario.UserReq,
+                Plano = usuario.Plano == null ? null : new PlanoDto
+                {
+                    PlanoId = usuario.Plano.PlanoId,
+                    Nome = usuario.Plano.Nome,
+                    Preco = usuario.Plano.Preco
+                },
+                Projetos = usuario.Projetos?.Select(p => new ProjetoDto
+                {
+                    ProjetoId = p.ProjetoId,
+                    Nome = p.Nome,
+                    Descricao = p.Descricao,
+                    dataInicio = p.dataInicio,
+                    Status = p.Status
+                }).ToList() ?? new List<ProjetoDto>()
+            };
+
+            return Ok(usuarioDto);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIdUsers(string id)
+        {
+            var user = await _context.Usuarios.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+
+            return Ok(user);
+        }
+
         // GET api/<UsuariosController>/5
         //[HttpGet("{id}")]
         //public string Get(int id)
@@ -250,19 +311,6 @@ namespace APIEnercheck.Controllers
                 Plano = new { plano.PlanoId, plano.Nome, plano.Preco, plano.QuantidadeUsers }
             });
 
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetIdUsers(string id)
-        {
-            var user = await _context.Usuarios.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "Usuário não encontrado" });
-            }
-
-            return Ok(user);
         }
 
 
