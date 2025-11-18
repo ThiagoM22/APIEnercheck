@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -39,6 +40,7 @@ namespace APIEnercheck.Controllers
             public string? Empresa { get; set; }
             public PlanoDto Plano { get; set; }
             public List<ProjetoDto> Projetos { get; set; }
+            public List<String> Roles { get; set; }
         }
 
         public class PlanoDto
@@ -66,30 +68,39 @@ namespace APIEnercheck.Controllers
     .Include(u => u.Projetos)
     .ToListAsync();
 
+
             //Mapeia o DTO, criando para cada usuario um objeto UsuarioDetalhesDTO, preenchendo os dados básicos do usuario, e caso ele tenha um plano e umprojeto, cria um DTO deles
-            var result = usuarios.Select(u => new UsuarioDetalhesDto
+            var result = new List<UsuarioDetalhesDto>();
+
+            foreach (var u in usuarios)
             {
-                Id = u.Id,
-                Email = u.Email,
-                NomeCompleto = u.NomeCompleto,
-                NumeroCrea = u.NumeroCrea,
-                Empresa = u.Empresa,
-                UseReq = u.UserReq,
-                Plano = u.Plano == null ? null : new PlanoDto
+                var roles = await _userManager.GetRolesAsync(u);
+
+                result.Add(new UsuarioDetalhesDto
                 {
-                    PlanoId = u.Plano.PlanoId,
-                    Nome = u.Plano.Nome,
-                    Preco = u.Plano.Preco
-                },
-                Projetos = u.Projetos?.Select(p => new ProjetoDto
-                {
-                    ProjetoId = p.ProjetoId,
-                    Nome = p.Nome,
-                    Descricao = p.Descricao,
-                    dataInicio = p.dataInicio,
-                    Status = p.Status
-                }).ToList() ?? new List<ProjetoDto>()
-            }).ToList();
+                    Id = u.Id,
+                    Email = u.Email,
+                    NomeCompleto = u.NomeCompleto,
+                    NumeroCrea = u.NumeroCrea,
+                    Empresa = u.Empresa,
+                    UseReq = u.UserReq,
+                    Plano = u.Plano == null ? null : new PlanoDto
+                    {
+                        PlanoId = u.Plano.PlanoId,
+                        Nome = u.Plano.Nome,
+                        Preco = u.Plano.Preco
+                    },
+                    Projetos = u.Projetos?.Select(p => new ProjetoDto
+                    {
+                        ProjetoId = p.ProjetoId,
+                        Nome = p.Nome,
+                        Descricao = p.Descricao,
+                        dataInicio = p.dataInicio,
+                        Status = p.Status
+                    }).ToList() ?? new List<ProjetoDto>(),
+                    Roles = roles.ToList()
+                });
+            }
 
 
             return Ok(result);
@@ -132,6 +143,10 @@ namespace APIEnercheck.Controllers
                 .Include(u => u.Projetos)
                 .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
+            //Armazenando a role do usuario logado
+            var roles = await _userManager.GetRolesAsync(usuario);
+
+            //Verificando se a role Existe
             if (usuario == null)
                 return NotFound("Usuário não encontrado.");
 
@@ -157,7 +172,9 @@ namespace APIEnercheck.Controllers
                     Descricao = p.Descricao,
                     dataInicio = p.dataInicio,
                     Status = p.Status
-                }).ToList() ?? new List<ProjetoDto>()
+                }).ToList() ?? new List<ProjetoDto>(),
+                Roles = roles.ToList()
+
             };
 
             return Ok(usuarioDto);
@@ -185,7 +202,7 @@ namespace APIEnercheck.Controllers
         //}
 
         // POST api/<UsuariosController>
-        [HttpPost]
+        [HttpPost("Cliente")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto model)
         {
             if (!ModelState.IsValid)
@@ -206,25 +223,63 @@ namespace APIEnercheck.Controllers
 
             // Crie o usuário com a senha usando o UserManager
             var result = await _userManager.CreateAsync(user, model.Senha);
-
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Cliente"); // ou "Admin", conforme sua lógica
+                var rolas = await _userManager.GetRolesAsync(user);
+
+                return CreatedAtAction(nameof(GetUsuarios), new { id = user.Id }, new UserResponseDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    NomeCompleto = user.NomeCompleto,
+                    NumeroCrea = user.NumeroCrea,
+                    Empresa = user.Empresa,
+                    Roles = rolas.ToList()
+                });
             }
-            if (!result.Succeeded)
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("Admin")]
+        public async Task<IActionResult> RegisterAmin([FromBody] RegisterDto model)
+        {
+            if (!ModelState.IsValid)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(ModelState);
             }
 
-            return CreatedAtAction(nameof(GetUsuarios), new { id = user.Id }, new UserResponseDto
+            //Crie uma nova instância de usuarios
+            var user = new Usuario
             {
-                Id = user.Id,
-                Email = user.Email,
-                NomeCompleto = user.NomeCompleto,
-                NumeroCrea = user.NumeroCrea,
-                Empresa = user.Empresa,
-            });
+                UserName = model.Email,
+                Email = model.Email,
+                NomeCompleto = model.NomeCompleto,
+                NumeroCrea = model.NumeroCrea,
+                Empresa = model.Empresa,
+                EmailConfirmed = true
+            };
+
+            // Crie o usuário com a senha usando o UserManager
+            var result = await _userManager.CreateAsync(user, model.Senha);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Admin"); // ou "Admin", conforme sua lógica
+                var rolas = await _userManager.GetRolesAsync(user);
+
+                return CreatedAtAction(nameof(GetUsuarios), new { id = user.Id }, new UserResponseDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    NomeCompleto = user.NomeCompleto,
+                    NumeroCrea = user.NumeroCrea,
+                    Empresa = user.Empresa,
+                    Roles = rolas.ToList()
+                });
+            }
+            return BadRequest(result.Errors);
         }
+
 
         public class RegisterDto
         {
@@ -252,6 +307,7 @@ namespace APIEnercheck.Controllers
             public string NomeCompleto { get; set; }
             public string NumeroCrea { get; set; }
             public string Empresa { get; set; }
+            public List<string> Roles { get; set; }
         }
 
         // PUT api/<UsuariosController>/5
