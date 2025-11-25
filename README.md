@@ -104,9 +104,8 @@ Authorizathion: Bearer SEU_TOKEN
 | **GET** | ```/api/Usuarios``` | Lista de usuarios | 
 | **GET** | ```/api/Usuarios{id}``` | Busca usuário por ID | 
 | **GET** | ```/api/Usuarios/me``` | Busca usuário logado | 
-| **POST** | ```/api/Usuarios``` | Cria um novo usuário | 
-| **POST** | ```/api/Usuarios/Cliente``` | Cria um novo usuário | 
-| **POST** | ```/api/Usuarios/Admin``` | Cria um novo usuário | 
+| **POST** | ```/api/Usuarios/Cliente``` | Cria um novo usuário Cliente | 
+| **POST** | ```/api/Usuarios/Admin``` | Cria um novo usuário Admin | 
 | **PUT** | ```/api/Usuarios{id}``` | Atualiza o usuário |
 | **PUT** | ```/api/Usuarios/usuario/add/plano``` | Adiciona um plano ao usuário |
 | **DELETE** | ```/api/Usuarios{id}``` | Remove um usuário | 
