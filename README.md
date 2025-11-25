@@ -148,7 +148,7 @@ http://localhost:5000/swagger
 ## 📄 Licença
 Este projeto está licenciado sob a Licença MIT. Para mais detalhes, consulte o arquivo **LICENSE**.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 <hr>
 
 ## 🧑‍💻 Desenvolvido por 
