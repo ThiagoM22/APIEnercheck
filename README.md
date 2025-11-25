@@ -136,7 +136,7 @@ Authorizathion: Bearer SEU_TOKEN
 <hr>
 
 ## 📄 Licença
-- **Este projeto está licenciado sob a MIT License.**
+ <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge"/>
 
 <hr>
 
