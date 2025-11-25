@@ -162,9 +162,9 @@ Este projeto está licenciado sob a Licença MIT. Para mais detalhes, consulte o
             </a>
         </td>
         <td align="center">
-            <a href="URL_GITHUB_LUIZ" style="text-decoration: none;">
+            <a href="https://github.com/LLuizXL" style="text-decoration: none;">
                 <img src="https://avatars.githubusercontent.com/u/158313981" width="100px;" alt="Avatar de Luiz Ghilherme"/><br />
-                <sub><b>Luiz Ghilherme</b></sub><br />
+                <sub><b>Luiz Guilherme</b></sub><br />
                 💻 Dev FullStack
             </a>
         </td>
