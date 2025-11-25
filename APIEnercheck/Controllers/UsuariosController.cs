@@ -106,7 +106,7 @@ namespace APIEnercheck.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpPost("roles")]
         public async Task<IActionResult> CriarRole([FromBody] string roleName)
         {
