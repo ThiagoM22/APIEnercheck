@@ -8,6 +8,7 @@ using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Security.Claims;
+using APIEnercheck.DTOs.Users;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,36 +29,6 @@ namespace APIEnercheck.Controllers
             this._authorizationService = authorizationService;
         }
 
-
-        //Essas classes servem para estruturar os dados que serão enviados na resposta da API, evitando ciclos de referência e explondo apenas o necessário
-        public class UsuarioDetalhesDto
-        {
-            public string Id { get; set; }
-            public string Email { get; set; }
-            public string NomeCompleto { get; set; }
-            public string NumeroCrea { get; set; }
-            public int? UseReq { get; set; }
-            public string? Empresa { get; set; }
-            public PlanoDto Plano { get; set; }
-            public List<ProjetoDto> Projetos { get; set; }
-            public List<String> Roles { get; set; }
-        }
-
-        public class PlanoDto
-        {
-            public int PlanoId { get; set; }
-            public string Nome { get; set; }
-            public decimal? Preco { get; set; }
-        }
-
-        public class ProjetoDto
-        {
-            public Guid ProjetoId { get; set; }
-            public string Nome { get; set; }
-            public string Descricao { get; set; }
-            public DateTime dataInicio { get; set; }
-            public string? Status { get; set; }
-        }
         // GET: api/<UsuariosController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
@@ -195,14 +166,7 @@ namespace APIEnercheck.Controllers
             return Ok(user);
         }
 
-        // GET api/<UsuariosController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
 
-        // POST api/<UsuariosController>
         [HttpPost("Cliente")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto model)
         {
@@ -282,35 +246,6 @@ namespace APIEnercheck.Controllers
         }
 
 
-        public class RegisterDto
-        {
-            [Required(ErrorMessage = "O email pe obrigatório")]
-            [EmailAddress(ErrorMessage = "Formato de email inválido")]
-            public string Email { get; set; }
-
-            [Required(ErrorMessage = "A senha é obrigatória")]
-            [DataType(DataType.Password)]
-            public string Senha { get; set; }
-
-            [Required(ErrorMessage = "O nome de usuário é obrigatório")]
-            [StringLength(100, ErrorMessage = "O nome de exibição deve ter no máximo 100 caracteres")]
-            public string NomeCompleto { get; set; }
-            public int UserReq { get; set; }
-
-            public string NumeroCrea { get; set; }
-            public string? Empresa { get; set; }
-        }
-
-        public class UserResponseDto
-        {
-            public string Id { get; set; }
-            public string Email { get; set; }
-            public string NomeCompleto { get; set; }
-            public string NumeroCrea { get; set; }
-            public string Empresa { get; set; }
-            public List<string> Roles { get; set; }
-        }
-
         // PUT api/<UsuariosController>/5
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
@@ -360,7 +295,7 @@ namespace APIEnercheck.Controllers
             return NoContent();
         }
 
-        [HttpPut("usuario/add/plano")]
+        [HttpPut("add/plano")]
         public async Task<IActionResult> VincularPlanoAoUsuario([FromBody] int planoId)
         {
 
