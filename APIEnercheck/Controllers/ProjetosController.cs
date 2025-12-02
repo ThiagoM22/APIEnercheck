@@ -10,6 +10,7 @@ using APIEnercheck.Models;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using APIEnercheck.Services;
+using APIEnercheck.DTOs.Projetos;
 
 namespace APIEnercheck.Controllers
 {
@@ -78,36 +79,7 @@ namespace APIEnercheck.Controllers
             return NoContent();
         }
 
-        //DTOs para criação e resposta
 
-        //Define os dados necessários para criar um projeto.
-        public class ProjetoCreateDto
-        {
-            public string? UsuarioId { get; set; }
-            [Required]
-            public string Nome { get; set; }
-            [Required]
-            public string Descricao { get; set; }
-            public DateTime dataInicio { get; set; }
-            public int? Progresso { get; set; }
-            public string? Status { get; set; }
-            public string? Analise { get; set; }
-        }
-
-
-        //Define os dados que serão retornados ao cliente, evitando ciclos de referencia.
-        public class ProjetoResponseDto
-        {
-            public Guid ProjetoId { get; set; }
-            public string Nome { get; set; }
-            public string Descricao { get; set; }
-            public DateTime dataInicio { get; set; }
-            public int? Progresso { get; set; }
-            public string? Status { get; set; }
-            public string? Analise { get; set; }
-            public string UsuarioId { get; set; }
-            public string? UsuarioNome { get; set; }
-        }
         // POST: api/Projetos
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize]
