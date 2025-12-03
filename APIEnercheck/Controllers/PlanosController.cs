@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using APIEnercheck.Data;
 using APIEnercheck.Models;
 using Microsoft.AspNetCore.Authorization;
+using APIEnercheck.DTOs.Planos;
 
 namespace APIEnercheck.Controllers
 {
@@ -47,12 +48,18 @@ namespace APIEnercheck.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlano(int id, Plano plano)
+        public async Task<IActionResult> PutPlano(int id, [FromBody] PutPlanosDto dto)
         {
-            if (id != plano.PlanoId)
+            var plano = await _context.Planos.FindAsync(id);
+
+            if (plano == null)
             {
-                return BadRequest();
+                return NotFound("Esse plano não existe");
             }
+
+            plano.Nome = dto.Nome ?? plano.Nome;
+            plano.Preco = dto.Preco ?? plano.Preco;
+            plano.QuantidadeReq = dto.QuantidadeReq ?? plano.QuantidadeReq;
 
             _context.Entry(plano).State = EntityState.Modified;
 
@@ -79,15 +86,34 @@ namespace APIEnercheck.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<Plano>> PostPlano(Plano plano)
+        public async Task<ActionResult<Plano>> PostPlano([FromBody] PlanoCreateDto dto)
         {
-            _context.Planos.Add(plano);
+            var planos = new Plano
+            {
+                Nome = dto.Nome,
+                Preco = dto.Preco,
+                QuantidadeReq = dto.QuantidadeReq,
+                Ativo = true,
+                QuantidadeUsers = 0,
+            };
+
+            _context.Planos.Add(planos);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPlano", new { id = plano.PlanoId }, plano);
+            var response = new PlanoResponseDto
+            {
+                PlanoId = planos.PlanoId,
+                Nome = planos.Nome,
+                Preco = planos.Preco,
+                QuantidadeReq = planos.QuantidadeReq,
+                Ativo = true,
+                QuantidadeUsers = planos.QuantidadeUsers,
+
+            };
+
+            return CreatedAtAction("GetPlano", new { id = planos.PlanoId }, response);
         }
 
-        // DELETE: api/Planos/5
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlano(int id)

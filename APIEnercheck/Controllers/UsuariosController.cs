@@ -82,12 +82,12 @@ namespace APIEnercheck.Controllers
         public async Task<IActionResult> CriarRole([FromBody] string roleName)
         {
             if (string.IsNullOrWhiteSpace(roleName))
-                return BadRequest("O nome da rola é obrogatório");
+                return BadRequest("O nome da role é obrogatório");
 
             var rolesExiste = await _context.Roles.AnyAsync(r => r.Name == roleName);
             if (rolesExiste)
             {
-                return BadRequest("Essa rola já existe");
+                return BadRequest("Essa role já existe");
             }
             var roleManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
             if (roleManager == null)
@@ -249,13 +249,8 @@ namespace APIEnercheck.Controllers
         // PUT api/<UsuariosController>/5
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarios(string id, Usuario usuarios, [FromServices] IAuthorizationService authorizationService)
+        public async Task<IActionResult> PutUsuarios(string id, [FromBody] PutUsuariosDto dto, [FromServices] IAuthorizationService authorizationService)
         {
-            if (id != usuarios.Id)
-            {
-                return BadRequest();
-            }
-
             var authorizationResult = await authorizationService.AuthorizeAsync(User, id, "AdminOrOwner");
             if (!authorizationResult.Succeeded)
             {
@@ -268,8 +263,8 @@ namespace APIEnercheck.Controllers
                 return NotFound();
             }
 
-            usuarioesxite.NomeCompleto = usuarios.NomeCompleto;
-            usuarioesxite.Email = usuarios.Email;
+            usuarioesxite.NomeCompleto = dto.NomeCompleto ?? usuarioesxite.NomeCompleto;
+            usuarioesxite.Email = dto.Email ?? usuarioesxite.Email;
 
             _context.Entry(usuarioesxite).State = EntityState.Modified;
 
@@ -282,8 +277,8 @@ namespace APIEnercheck.Controllers
                 return NotFound("Usuario não encontrado");
             }
 
-            userExistente.NomeCompleto = usuarios.NomeCompleto;
-            userExistente.Email = usuarios.Email;
+            userExistente.NomeCompleto = dto.NomeCompleto ?? userExistente.NomeCompleto;
+            userExistente.Email = dto.Email ?? userExistente.Email;
 
             var result = await _userManager.UpdateAsync(userExistente);
 
@@ -304,7 +299,7 @@ namespace APIEnercheck.Controllers
 
             if (userLogadoId == null)
             {
-                NotFound("Não sobrou NADA pro betinha");
+                NotFound("Usuario não logado");
             }
 
 

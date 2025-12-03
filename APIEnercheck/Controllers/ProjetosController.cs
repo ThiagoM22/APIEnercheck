@@ -51,12 +51,16 @@ namespace APIEnercheck.Controllers
         // PUT: api/Projetos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProjeto(Guid id, Projeto projeto)
+        public async Task<IActionResult> PutProjeto(Guid id, PutProjetosDto dto)
         {
-            if (id != projeto.ProjetoId)
+            var projeto = await _context.Projeto.FindAsync(id);
+            if (projeto == null)
             {
-                return BadRequest();
+                return NotFound("Projeto não existe");
             }
+
+            projeto.Nome = dto.Nome ?? projeto.Nome;
+            projeto.Descricao = dto.Descricao ?? projeto.Descricao;
 
             _context.Entry(projeto).State = EntityState.Modified;
 
@@ -115,10 +119,9 @@ namespace APIEnercheck.Controllers
                 UsuarioId = logadinho,
                 Nome = dto.Nome,
                 Descricao = dto.Descricao,
-                dataInicio = dto.dataInicio,
-                Progresso = dto.Progresso,
-                Status = dto.Status,
-                Analise = dto.Analise,
+                dataInicio = DateTime.Now,
+                Progresso = 0,
+                Status = "Pendente",
             };
             //Salva so projeto no banco
             _context.Projeto.Add(projeto);
