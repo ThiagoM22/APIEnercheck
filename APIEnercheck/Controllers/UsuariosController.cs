@@ -84,15 +84,15 @@ namespace APIEnercheck.Controllers
             if (string.IsNullOrWhiteSpace(roleName))
                 return BadRequest("O nome da rola é obrogatório");
 
-            var rolasExiste = await _context.Roles.AnyAsync(r => r.Name == roleName);
-            if (rolasExiste)
+            var rolesExiste = await _context.Roles.AnyAsync(r => r.Name == roleName);
+            if (rolesExiste)
             {
                 return BadRequest("Essa rola já existe");
             }
-            var rolasManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
-            if (rolasManager == null)
+            var roleManager = HttpContext.RequestServices.GetService<RoleManager<IdentityRole>>();
+            if (roleManager == null)
                 return StatusCode(500, "RolaMagager não dispoivel");
-            var result = await rolasManager.CreateAsync(new IdentityRole(roleName));
+            var result = await roleManager.CreateAsync(new IdentityRole(roleName));
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
