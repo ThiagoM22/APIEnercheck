@@ -7,6 +7,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Migrations\20251206220751_VamosLa.cs" />
+	  <Compile Remove="Migrations\20251206220751_VamosLa.Designer.cs" />
+	  <Compile Remove="Migrations\20251206221908_Fudeu.cs" />
+	  <Compile Remove="Migrations\20251206221908_Fudeu.Designer.cs" />
+	  <Compile Remove="Migrations\20251206222648_PORRA.cs" />
+	  <Compile Remove="Migrations\20251206222648_PORRA.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.22" />

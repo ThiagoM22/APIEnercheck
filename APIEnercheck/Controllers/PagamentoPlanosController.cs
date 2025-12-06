@@ -91,15 +91,35 @@ namespace APIEnercheck.Controllers
             {
                 return Unauthorized("Usuario não encontrado");
             }
+
             var plano = await _context.Planos.FindAsync(dto.PlanoId);
+
+            if (plano == null)
+            {
+                return BadRequest("Plano inválido");
+            }
 
             var pagamentoPlano = new PagamentoPlano
             {
                 UsuarioId = logadinho,
                 DataPagamento = DateTime.UtcNow, 
+                PlanoId = dto.PlanoId,
+                ValorPago = plano.Preco,
             };
 
-            return CreatedAtAction("GetPagamentoPlano", new { id = pagamentoPlano.PagamentoPlanoId }, pagamentoPlano);
+            _context.PagamentoPlanos.Add(pagamentoPlano);
+            await _context.SaveChangesAsync();
+
+            var response = new ResponsePagamentoPlanoDto
+            {
+                PagamentoPlanoId = pagamentoPlano.PagamentoPlanoId,
+                PlanoId = pagamentoPlano.PlanoId,
+                UsuarioId = pagamentoPlano.UsuarioId,
+                DataPagamento = pagamentoPlano.DataPagamento,
+                ValorPago = pagamentoPlano.ValorPago
+            };
+
+            return CreatedAtAction("GetPagamentoPlano", new { id = pagamentoPlano.PagamentoPlanoId },response);
         }
 
         // DELETE: api/PagamentoPlanos/5
