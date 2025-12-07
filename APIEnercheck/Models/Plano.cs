@@ -18,7 +18,6 @@ namespace APIEnercheck.Models
         [Display(Name = "Total de Requisições")]
         [Range(0, 200)]
         public int? QuantidadeReq { get; set; }
-        public bool? Ativo { get; set; }
         public int? QuantidadeUsers { get; set; }
 
     }

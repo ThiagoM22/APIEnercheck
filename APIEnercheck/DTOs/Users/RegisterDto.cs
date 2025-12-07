@@ -15,8 +15,6 @@ namespace APIEnercheck.DTOs.Users
         [Required(ErrorMessage = "O nome de usuário é obrigatório")]
         [StringLength(100, ErrorMessage = "O nome de exibição deve ter no máximo 100 caracteres")]
         public string NomeCompleto { get; set; }
-        public int UserReq { get; set; }
-
         public string NumeroCrea { get; set; }
         public string? Empresa { get; set; }
     }

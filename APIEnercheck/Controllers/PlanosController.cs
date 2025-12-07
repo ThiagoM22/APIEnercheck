@@ -93,7 +93,6 @@ namespace APIEnercheck.Controllers
                 Nome = dto.Nome,
                 Preco = dto.Preco,
                 QuantidadeReq = dto.QuantidadeReq,
-                Ativo = true,
                 QuantidadeUsers = 0,
             };
 
@@ -106,7 +105,6 @@ namespace APIEnercheck.Controllers
                 Nome = planos.Nome,
                 Preco = planos.Preco,
                 QuantidadeReq = planos.QuantidadeReq,
-                Ativo = true,
                 QuantidadeUsers = planos.QuantidadeUsers,
 
             };
