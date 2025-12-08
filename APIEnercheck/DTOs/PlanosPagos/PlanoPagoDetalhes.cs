@@ -7,7 +7,7 @@
         public decimal? ValorTotal { get; set; }
         public string? UsuarioId { get; set; }
         public int PlanoId { get; set; }
-        public string? PlanoNome { get; set; }
+        public string? Nome { get; set; }
         public string? NomeCompleto { get; set; }
 
 

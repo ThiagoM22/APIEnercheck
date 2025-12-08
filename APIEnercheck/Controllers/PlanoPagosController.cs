@@ -49,9 +49,7 @@ namespace APIEnercheck.Controllers
                 DataPagamento = p.DataPagamento,
                 ValorTotal = p.ValorTotal,
                 UsuarioId = p.UsuarioId,
-                PlanoId = p.PlanoId,
-                PlanoNome = p.Plano != null ? p.Plano.Nome : null,
-                NomeCompleto = p.Usuario != null ? p.Usuario.NomeCompleto : null
+                PlanoId = p.PlanoId
             }).ToList();
 
             return Ok(planoPagoDetalhes);

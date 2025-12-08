@@ -34,6 +34,31 @@ namespace APIEnercheck.Controllers
             return await _context.Projeto.ToListAsync();
         }
 
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMeusProjetos()
+        {
+            var logadinho = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(logadinho))
+                return Unauthorized("Usuario não autenticado");
+
+            var meusProjetos = await _context.Projeto.Where(p => p.UsuarioId == logadinho).ToListAsync();
+
+            var ProjetosDetalhe = meusProjetos.Select(m => new ProjetosDetalhe
+            {
+                ProjetoId = m.ProjetoId,
+                Nome = m.Nome,
+                Descricao = m.Descricao,
+                dataInicio = m.dataInicio,
+                Progresso = m.Progresso,
+                Status = m.Status,
+                Analise = m.Analise
+            }).ToList();
+
+            return Ok(ProjetosDetalhe);
+
+        }
+
         // GET: api/Projetos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Projeto>> GetProjeto(Guid id)
