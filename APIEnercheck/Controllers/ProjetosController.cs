@@ -95,6 +95,8 @@ namespace APIEnercheck.Controllers
             if (string.IsNullOrEmpty(logadinho))
                 return Unauthorized("Usuario não autenticado");
 
+            var nowUtc = DateTime.UtcNow;
+
             //Busca o usuario
             var usuario = await _context.Usuarios
                 .Include(u => u.Plano)
@@ -105,6 +107,11 @@ namespace APIEnercheck.Controllers
             //Verifica se o usuario possui um plano
             if (usuario.Plano == null)
                 return BadRequest("Usuário não possui um plano");
+
+            if(usuario.DataVencimentoPlano <= nowUtc)
+            {
+                return BadRequest("Seu plano está vencido");
+            }
 
             if (usuario.UserReq == 0)
             {

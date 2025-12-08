@@ -38,7 +38,7 @@ namespace APIEnercheck.Controllers
             if (planoPago == null)
                 return NotFound("PlanoPago não encontrado");
 
-            var planoPagoDto =planoPago.Select(planoPago => new PlanoPagoDetalhes
+            var planoPagoDto = planoPago.Select(planoPago => new PlanoPagoDetalhes
             {
                 PlanoPagoId = planoPago.PlanoPagoId,
                 ValorTotal = planoPago.ValorTotal,
@@ -59,7 +59,7 @@ namespace APIEnercheck.Controllers
         }
 
         // GET: api/PlanoPagos/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetPlanoPagoById")]
         public async Task<ActionResult<PlanoPago>> GetPlanoPago(Guid id)
         {
             var planoPago = await _context.PlanosPagos.FindAsync(id);
@@ -70,37 +70,6 @@ namespace APIEnercheck.Controllers
             }
 
             return planoPago;
-        }
-
-        // PUT: api/PlanoPagos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlanoPago(Guid id, PlanoPago planoPago)
-        {
-            if (id != planoPago.PlanoPagoId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(planoPago).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlanoPagoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
         }
 
         // POST: api/PlanoPagos
@@ -144,8 +113,8 @@ namespace APIEnercheck.Controllers
                 DataPagamento = planoPago.DataPagamento,
             };
 
-
-            return CreatedAtAction("GetPlanoPago", new { id = planoPago.PlanoPagoId }, response);
+            // Retorno corrigido usando nameof para evitar erros de digitação
+            return CreatedAtRoute("GetPlanoPagoById", new { id = planoPago.PlanoPagoId }, response);
         }
 
         // DELETE: api/PlanoPagos/5

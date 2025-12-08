@@ -315,10 +315,19 @@ namespace APIEnercheck.Controllers
                 return NotFound("Plano não encontrado");
             }
 
+            if (usuario.Plano == null)
+            { 
+            plano.QuantidadeUsers++;
+            _context.Entry(plano).State = EntityState.Modified;
+                }
+
             //Atualiza o ususario com o novo plano
             usuario.PlanoId = planoId;
             usuario.Plano = plano;
             usuario.UserReq = plano.QuantidadeReq ?? 0;
+            usuario.PlanoAtivo = true;
+            usuario.DataInicioPlano = DateTime.UtcNow;
+            usuario.DataVencimentoPlano = DateTime.UtcNow.AddMonths(1);
             _context.Entry(usuario).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -331,6 +340,8 @@ namespace APIEnercheck.Controllers
                 usuario.NomeCompleto,
                 usuario.PlanoId,
                 usuario.UserReq,
+                usuario.DataInicioPlano,
+                usuario.DataVencimentoPlano,
                 Plano = new { plano.PlanoId, plano.Nome, plano.Preco, plano.QuantidadeUsers }
             });
 
