@@ -26,36 +26,35 @@ namespace APIEnercheck.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PlanoPago>>> GetPlanosPagos()
         {
+            return await _context.PlanosPagos.ToListAsync();
+;       }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMeusPlanoPago()
+        {
             var logadinho = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
             if (string.IsNullOrEmpty(logadinho))
+            {
                 return Unauthorized("Usuario não logado");
+            }
 
             var planoPago = await _context.PlanosPagos
-                .Include(u => u.Plano)
-                .Include(u => u.Usuario)
-                .Where(u => u.UsuarioId == logadinho).ToListAsync();
+                .Where(p => p.UsuarioId == logadinho)
+                .ToListAsync();
 
-            if (planoPago == null)
-                return NotFound("PlanoPago não encontrado");
-
-            var planoPagoDto = planoPago.Select(planoPago => new PlanoPagoDetalhes
+            var planoPagoDetalhes = planoPago.Select(p => new PlanoPagoDetalhes
             {
-                PlanoPagoId = planoPago.PlanoPagoId,
-                ValorTotal = planoPago.ValorTotal,
-                DataPagamento = planoPago.DataPagamento,
-                Plano = planoPago.Plano == null ? null : new DTOs.PlanosPagos.Plano
-                {
-                    Nome = planoPago.Plano.Nome,
-                    Preco = planoPago.Plano.Preco,
-                },
-                Usuario = planoPago.Usuario == null ? null : new DTOs.PlanosPagos.Usuario
-                {
-                    NomeCompleto = planoPago.Usuario.NomeCompleto,
-                    Email = planoPago.Usuario.Email,
-                },
+                PlanoPagoId = p.PlanoPagoId,
+                DataPagamento = p.DataPagamento,
+                ValorTotal = p.ValorTotal,
+                UsuarioId = p.UsuarioId,
+                PlanoId = p.PlanoId,
+                PlanoNome = p.Plano != null ? p.Plano.Nome : null,
+                NomeCompleto = p.Usuario != null ? p.Usuario.NomeCompleto : null
             }).ToList();
 
-            return Ok(planoPagoDto);
+            return Ok(planoPagoDetalhes);
         }
 
         // GET: api/PlanoPagos/5
