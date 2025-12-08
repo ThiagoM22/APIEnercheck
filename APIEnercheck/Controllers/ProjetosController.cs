@@ -28,6 +28,7 @@ namespace APIEnercheck.Controllers
         }
 
         // GET: api/Projetos
+        [Authorize (Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Projeto>>> GetProjeto()
         {
@@ -39,8 +40,16 @@ namespace APIEnercheck.Controllers
         {
             var logadinho = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+
             if (string.IsNullOrEmpty(logadinho))
                 return Unauthorized("Usuario não autenticado");
+
+            var usuario = await _context.Usuarios.FindAsync(logadinho);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuario não logado");
+            }
 
             var meusProjetos = await _context.Projeto.Where(p => p.UsuarioId == logadinho).ToListAsync();
 
@@ -52,7 +61,9 @@ namespace APIEnercheck.Controllers
                 dataInicio = m.dataInicio,
                 Progresso = m.Progresso,
                 Status = m.Status,
-                Analise = m.Analise
+                Analise = m.Analise,
+                UsuarioNome = usuario.NomeCompleto
+
             }).ToList();
 
             return Ok(ProjetosDetalhe);
@@ -60,6 +71,7 @@ namespace APIEnercheck.Controllers
         }
 
         // GET: api/Projetos/5
+        [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Projeto>> GetProjeto(Guid id)
         {

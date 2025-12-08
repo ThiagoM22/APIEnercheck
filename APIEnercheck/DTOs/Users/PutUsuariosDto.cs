@@ -6,7 +6,7 @@ namespace APIEnercheck.DTOs.Users
     {
         public string Email { get; set; }
         public string NomeCompleto { get; set; }
-        public string NumeroCrea { get; set; }
+        public string? NumeroCrea { get; set; }
         public string? Empresa { get; set; }
     }
 }

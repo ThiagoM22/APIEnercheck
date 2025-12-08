@@ -39,9 +39,24 @@ namespace APIEnercheck.Controllers
                 return Unauthorized("Usuario não logado");
             }
 
+            var usuario = await _context.Usuarios.FindAsync(logadinho);
+
+            if (usuario == null)
+            {
+                return NotFound("Usuario não logado");
+            }
+
+            var plano = await _context.Planos.FindAsync(usuario.PlanoId);
+
+            if(plano == null)
+            {
+                return NotFound("Usuario não possui um plano");
+            }
+
             var planoPago = await _context.PlanosPagos
                 .Where(p => p.UsuarioId == logadinho)
                 .ToListAsync();
+
 
             var planoPagoDetalhes = planoPago.Select(p => new PlanoPagoDetalhes
             {
@@ -49,7 +64,9 @@ namespace APIEnercheck.Controllers
                 DataPagamento = p.DataPagamento,
                 ValorTotal = p.ValorTotal,
                 UsuarioId = p.UsuarioId,
-                PlanoId = p.PlanoId
+                NomeCompleto = usuario.NomeCompleto,
+                PlanoId = p.PlanoId,
+                Nome = plano.Nome          
             }).ToList();
 
             return Ok(planoPagoDetalhes);

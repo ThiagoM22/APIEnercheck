@@ -290,6 +290,38 @@ namespace APIEnercheck.Controllers
             return NoContent();
         }
 
+        [HttpPut("me")]
+        public async Task<IActionResult> PutUsuarioLogado([FromBody] PutUsuariosDto dto)
+        {
+            var userLogadoId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userLogadoId == null)
+            {
+                NotFound("Usuario não logado");
+            }
+            var usuarioesxite = await _context.Usuarios.FindAsync(userLogadoId);
+            if (usuarioesxite == null)
+            {
+                return NotFound();
+            }
+            usuarioesxite.NomeCompleto = dto.NomeCompleto ?? usuarioesxite.NomeCompleto;
+            usuarioesxite.Email = dto.Email ?? usuarioesxite.Email;
+            _context.Entry(usuarioesxite).State = EntityState.Modified;
+
+            var userExistente = await _userManager.FindByIdAsync(userLogadoId);
+            if (userExistente == null)
+            {
+                return NotFound("Usuario não encontrado");
+            }
+            userExistente.NomeCompleto = dto.NomeCompleto ?? userExistente.NomeCompleto;
+            userExistente.Email = dto.Email ?? userExistente.Email;
+            var result = await _userManager.UpdateAsync(userExistente);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Erro ao atualizar o usuário. " + result.Errors);
+            }
+            return NoContent();
+        }
+
         [HttpPut("add/plano")]
         public async Task<IActionResult> VincularPlanoAoUsuario([FromBody] int planoId)
         {
