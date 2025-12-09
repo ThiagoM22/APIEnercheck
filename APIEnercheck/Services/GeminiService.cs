@@ -13,7 +13,6 @@ namespace APIEnercheck.Services
         {
             _httpClient = httpClient;
             _apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY");
-
         }
 
         public async Task<string> AnalisarImagemAsync(byte[] imageBytes, string mimeType, string descricaoProjeto)
