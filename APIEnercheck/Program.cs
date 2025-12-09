@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<GeminiService>();
 
@@ -33,6 +34,7 @@ builder.Services.AddIdentityApiEndpoints<Usuario>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApiDbContext>()
 .AddDefaultTokenProviders();
+
 
 builder.Services.AddSwaggerGen(c =>
 {

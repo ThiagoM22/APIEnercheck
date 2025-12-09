@@ -305,6 +305,8 @@ namespace APIEnercheck.Controllers
             }
             usuarioesxite.NomeCompleto = dto.NomeCompleto ?? usuarioesxite.NomeCompleto;
             usuarioesxite.Email = dto.Email ?? usuarioesxite.Email;
+            usuarioesxite.NumeroCrea = dto.NumeroCrea ?? usuarioesxite.NumeroCrea;
+            usuarioesxite.Empresa = dto.Empresa ?? usuarioesxite.Empresa;
             _context.Entry(usuarioesxite).State = EntityState.Modified;
 
             var userExistente = await _userManager.FindByIdAsync(userLogadoId);
@@ -314,6 +316,8 @@ namespace APIEnercheck.Controllers
             }
             userExistente.NomeCompleto = dto.NomeCompleto ?? userExistente.NomeCompleto;
             userExistente.Email = dto.Email ?? userExistente.Email;
+            userExistente.NumeroCrea = dto.NumeroCrea ?? usuarioesxite.NumeroCrea;
+            userExistente.Empresa = dto.Empresa ?? usuarioesxite.Empresa;
             var result = await _userManager.UpdateAsync(userExistente);
             if (!result.Succeeded)
             {
@@ -348,10 +352,10 @@ namespace APIEnercheck.Controllers
             }
 
             if (usuario.Plano == null)
-            { 
-            plano.QuantidadeUsers++;
-            _context.Entry(plano).State = EntityState.Modified;
-                }
+            {
+                plano.QuantidadeUsers++;
+                _context.Entry(plano).State = EntityState.Modified;
+            }
 
             //Atualiza o ususario com o novo plano
             usuario.PlanoId = planoId;
@@ -389,6 +393,15 @@ namespace APIEnercheck.Controllers
             {
                 return NotFound();
             }
+
+            var planoUser = await _context.Planos.FindAsync(usuario.PlanoId);
+
+            if (planoUser != null)
+            {
+                planoUser.QuantidadeUsers--;
+                _context.Entry(planoUser).State = EntityState.Modified;
+            }
+
             var result = await _userManager.DeleteAsync(usuario);
             if (!result.Succeeded)
             {

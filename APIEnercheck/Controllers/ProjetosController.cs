@@ -28,7 +28,7 @@ namespace APIEnercheck.Controllers
         }
 
         // GET: api/Projetos
-        [Authorize (Roles = "admin")]
+        [Authorize (Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Projeto>>> GetProjeto()
         {

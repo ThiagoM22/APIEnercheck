@@ -117,13 +117,44 @@ namespace APIEnercheck.Controllers
         public async Task<IActionResult> DeletePlano(int id)
         {
             var plano = await _context.Planos.FindAsync(id);
+
             if (plano == null)
             {
                 return NotFound();
             }
 
-            _context.Planos.Remove(plano);
-            await _context.SaveChangesAsync();
+            // Busca usuários que usam esse plano
+            var usuariosComPlano = await _context.Usuarios
+                .Where(u => u.PlanoId == id)
+                .ToListAsync();
+
+            // Executa dentro de transação para garantir consistência
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var usuario in usuariosComPlano)
+                {
+                    usuario.PlanoId = null;
+                    usuario.Plano = null;
+                    usuario.PlanoAtivo = false;
+                    usuario.UserReq = 0;
+                    usuario.DataInicioPlano = null;
+                    usuario.DataVencimentoPlano = null;
+
+                    _context.Entry(usuario).State = EntityState.Modified;
+                }
+
+                // Remove o plano
+                _context.Planos.Remove(plano);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
 
             return NoContent();
         }
