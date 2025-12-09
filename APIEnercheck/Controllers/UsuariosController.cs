@@ -55,6 +55,7 @@ namespace APIEnercheck.Controllers
                     NumeroCrea = u.NumeroCrea,
                     Empresa = u.Empresa,
                     UseReq = u.UserReq,
+                    PlanoAtivo = u.PlanoAtivo,
                     Plano = u.Plano == null ? null : new PlanoDto
                     {
                         PlanoId = u.Plano.PlanoId,
@@ -131,6 +132,7 @@ namespace APIEnercheck.Controllers
                 NumeroCrea = usuario.NumeroCrea,
                 Empresa = usuario.Empresa,
                 UseReq = usuario.UserReq,
+                PlanoAtivo = usuario.PlanoAtivo,
                 Plano = usuario.Plano == null ? null : new PlanoDto
                 {
                     PlanoId = usuario.Plano.PlanoId,
@@ -183,6 +185,8 @@ namespace APIEnercheck.Controllers
                 NomeCompleto = model.NomeCompleto,
                 NumeroCrea = model.NumeroCrea,
                 Empresa = model.Empresa,
+                PlanoAtivo = false,
+
                 EmailConfirmed = true
             };
 
@@ -222,6 +226,7 @@ namespace APIEnercheck.Controllers
                 NomeCompleto = model.NomeCompleto,
                 NumeroCrea = model.NumeroCrea,
                 Empresa = model.Empresa,
+                PlanoAtivo = false,
                 EmailConfirmed = true
             };
 
