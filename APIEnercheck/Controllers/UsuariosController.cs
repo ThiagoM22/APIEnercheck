@@ -348,10 +348,10 @@ namespace APIEnercheck.Controllers
             }
 
             if (usuario.Plano == null)
-            { 
-            plano.QuantidadeUsers++;
-            _context.Entry(plano).State = EntityState.Modified;
-                }
+            {
+                plano.QuantidadeUsers++;
+                _context.Entry(plano).State = EntityState.Modified;
+            }
 
             //Atualiza o ususario com o novo plano
             usuario.PlanoId = planoId;
