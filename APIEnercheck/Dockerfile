@@ -20,6 +20,8 @@ WORKDIR "/src/APIEnercheck"
 # Compila a aplicação
 RUN dotnet build "./APIEnercheck.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+ENV GEMINI_API_KEY=AIzaSyAdgZhnTeEh2h_CE-KYR1vLn9ZyA1CwDB0
+
 # Estágio 3: Publish
 # Publica a aplicação gerando os arquivos finais (DLLs)
 FROM build AS publish
