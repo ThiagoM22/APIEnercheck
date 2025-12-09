@@ -28,7 +28,7 @@ namespace APIEnercheck.Controllers
         }
 
         // GET: api/Projetos
-        [Authorize (Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Projeto>>> GetProjeto()
         {
@@ -145,8 +145,11 @@ namespace APIEnercheck.Controllers
             if (usuario.Plano == null)
                 return BadRequest("Usuário não possui um plano");
 
-            if(usuario.DataVencimentoPlano <= nowUtc)
+            if (usuario.DataVencimentoPlano <= nowUtc)
             {
+                usuario.PlanoAtivo = false;
+                _context.Entry(usuario).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
                 return BadRequest("Seu plano está vencido");
             }
 
