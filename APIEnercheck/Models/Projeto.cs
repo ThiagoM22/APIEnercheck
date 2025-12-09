@@ -13,7 +13,7 @@ namespace APIEnercheck.Models
         [DataType(DataType.MultilineText)]
         public required string Descricao { get; set; }
         public string UsuarioId { get; set; }
-        public Usuario? Usuario { get; set; }
+        public virtual Usuario? Usuario { get; set; }
         [DataType(DataType.DateTime)]
         public DateTime dataInicio { get; set; }
         public int? Progresso { get; set; }

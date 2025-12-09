@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIEnercheck.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20251125173822_Atualizacao")]
-    partial class Atualizacao
+    [Migration("20251206222914_VAITOMARNOCU")]
+    partial class VAITOMARNOCU
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,34 @@ namespace APIEnercheck.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("APIEnercheck.Models.PagamentoPlano", b =>
+                {
+                    b.Property<Guid>("PagamentoPlanoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("DataPagamento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PlanoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal?>("ValorPago")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("PagamentoPlanoId");
+
+                    b.HasIndex("PlanoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("PagamentoPlanos");
+                });
 
             modelBuilder.Entity("APIEnercheck.Models.Plano", b =>
                 {
@@ -308,6 +336,25 @@ namespace APIEnercheck.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("APIEnercheck.Models.PagamentoPlano", b =>
+                {
+                    b.HasOne("APIEnercheck.Models.Plano", "Plano")
+                        .WithMany()
+                        .HasForeignKey("PlanoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("APIEnercheck.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plano");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("APIEnercheck.Models.Projeto", b =>
