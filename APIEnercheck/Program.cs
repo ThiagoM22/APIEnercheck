@@ -1,9 +1,11 @@
 using APIEnercheck.Data;
 using APIEnercheck.Models;
 using APIEnercheck.Services;
+using APIEnercheck.Services.TokenServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<GeminiService>();
@@ -33,6 +35,8 @@ builder.Services.AddIdentityApiEndpoints<Usuario>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApiDbContext>()
 .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

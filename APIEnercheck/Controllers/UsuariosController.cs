@@ -389,6 +389,15 @@ namespace APIEnercheck.Controllers
             {
                 return NotFound();
             }
+
+            var planoUser = await _context.Planos.FindAsync(usuario.PlanoId);
+
+            if (planoUser != null)
+            {
+                planoUser.QuantidadeUsers--;
+                _context.Entry(planoUser).State = EntityState.Modified;
+            }
+
             var result = await _userManager.DeleteAsync(usuario);
             if (!result.Succeeded)
             {
