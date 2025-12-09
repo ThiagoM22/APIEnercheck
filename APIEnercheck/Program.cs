@@ -36,7 +36,6 @@ builder.Services.AddIdentityApiEndpoints<Usuario>(options =>
 .AddEntityFrameworkStores<ApiDbContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

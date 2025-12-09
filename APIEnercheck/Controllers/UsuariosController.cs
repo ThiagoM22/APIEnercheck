@@ -305,6 +305,8 @@ namespace APIEnercheck.Controllers
             }
             usuarioesxite.NomeCompleto = dto.NomeCompleto ?? usuarioesxite.NomeCompleto;
             usuarioesxite.Email = dto.Email ?? usuarioesxite.Email;
+            usuarioesxite.NumeroCrea = dto.NumeroCrea ?? usuarioesxite.NumeroCrea;
+            usuarioesxite.Empresa = dto.Empresa ?? usuarioesxite.Empresa;
             _context.Entry(usuarioesxite).State = EntityState.Modified;
 
             var userExistente = await _userManager.FindByIdAsync(userLogadoId);
@@ -314,6 +316,8 @@ namespace APIEnercheck.Controllers
             }
             userExistente.NomeCompleto = dto.NomeCompleto ?? userExistente.NomeCompleto;
             userExistente.Email = dto.Email ?? userExistente.Email;
+            userExistente.NumeroCrea = dto.NumeroCrea ?? usuarioesxite.NumeroCrea;
+            userExistente.Empresa = dto.Empresa ?? usuarioesxite.Empresa;
             var result = await _userManager.UpdateAsync(userExistente);
             if (!result.Succeeded)
             {
