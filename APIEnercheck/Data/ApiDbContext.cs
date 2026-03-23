@@ -13,6 +13,5 @@ namespace APIEnercheck.Data
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Projeto> Projeto { get; set; } = default!;
         public DbSet<PlanoPago> PlanosPagos { get; set; }
-
         }
 }
