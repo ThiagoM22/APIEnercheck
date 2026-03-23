@@ -1,5 +1,4 @@
-﻿using static APIEnercheck.Controllers.UsuariosController;
-
+﻿
 namespace APIEnercheck.DTOs.Users
 {
     public class UsuarioDetalhesDto
