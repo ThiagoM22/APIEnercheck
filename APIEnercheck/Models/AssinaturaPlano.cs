@@ -7,7 +7,7 @@
         public DateTime? DataInicio { get; set; }
         public DateTime? DataVencimento { get; set; }   
 
-        public Plano Plano { get; set; }
-        public Usuario Usuario { get; set; }
+        public Plano? Plano { get; set; }
+        public Usuario? Usuario { get; set; }
     }
 }
